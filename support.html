@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teletic Support Dashboard</title>
+    <style>
+        /* Reset & General Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Sign-in Page */
+        #signin-page {
+            text-align: center;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        select,
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus,
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+            border-color: #1d72b8;
+            outline: none;
+        }
+
+        button {
+            background-color: #1d72b8;
+            color: #ffffff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #155a8a;
+            transform: translateY(-2px);
+        }
+
+        /* Dashboard Styling */
+        #dashboard {
+            width: 100%;
+            display: none;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .dashboard-header {
+            background: #1d3557;
+            color: #f1faee;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #note-bar {
+            flex-grow: 1;
+            margin-left: 20px;
+            color: #a8dadc;
+            font-size: 14px;
+            cursor: text;
+            border: 1px dashed transparent;
+            padding: 5px;
+            transition: border-color 0.3s ease;
+        }
+
+        #note-bar:focus {
+            border-color: #a8dadc;
+            outline: none;
+        }
+
+        #welcome-user {
+            margin-right: 20px;
+            font-size: 16px;
+            color: #a8dadc;
+        }
+
+        /* Sidebar Icon */
+        #sidebar-icon {
+            font-size: 24px;
+            color: #f1faee;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        #sidebar-icon:hover {
+            transform: rotate(90deg);
+        }
+
+        /* Sidebar */
+        #sidebar {
+            background: #1d3557;
+            color: #f1faee;
+            width: 220px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: -220px;
+            padding: 20px;
+            transition: left 0.3s ease;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0,  0.2);
+            z-index: 1;
+        }
+
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #sidebar li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #sidebar li:hover {
+            background: #155a8a;
+        }
+
+        /* Main Content */
+        #main-content {
+            padding: 80px 20px 20px;
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background: #1d3557;
+            color: #f1faee;
+        }
+
+        tr:nth-child(even) {
+            background: #f5f7fa;
+        }
+
+        tr:nth-child(odd) {
+            background: #ffffff;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .search-bar input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-bar input[type="text"]:focus {
+            border-color: #1d72b8;
+            outline: none;
+        }
+
+        .search-bar button {
+            background-color: #1d72b8;
+            color: #ffffff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+            margin-left: 10px;
+        }
+
+        .search-bar button:hover {
+            background-color: #155a8a;
+            transform: translateY(-2px);
+        }
+
+        /* Archive Section */
+        #archive {
+            background: #1d3557;
+            color: #f1faee;
+            width: 100%;
+            padding: 20px;
+            display: none; /* Initially hidden */
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        #archive h3 {
+            margin: 0;
+        }
+
+        #archive select {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #f1faee;
+        }
+
+        #archive button {
+            background-color: #e63946;
+            color: #ffffff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        #archive button:hover {
+            background-color: #d62839;
+            transform: translateY(-2px);
+        }
+
+        /* Archive Table */
+        #archive-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #archive-table th,
+        #archive-table td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        #archive-table th {
+            background: #1d3557;
+            color: #f1faee;
+        }
+
+        /* Color Coding for Select Options */
+        .problem-select {
+            background-color: #f1faee;
+        }
+
+        .support-select {
+            background-color: #a8dadc;
+        }
+
+        .modem-select {
+            background-color: #457b9d;
+        }
+
+        .status-select {
+            background-color: #f1faee;
+        }
+
+        /* Duplicate Row Button */
+        .duplicate-btn {
+            background-color: #f1faee;
+            color: #1d3557;
+            padding:10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .duplicate-btn:hover {
+            background-color: #a8dadc;
+            transform: translateY(-2px);
+        } 
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #1d3557;
+            color: #f1faee;
+            padding: 10px;
+            text-align: center;
+            z-index: 1000; /* Ensure it stays on top */
+        }
+
+        footer button {
+            background-color: #e63946;
+            color: #ffffff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="signin-page">
+        <h2>Sign In</h2>
+        <select id="username-select">
+            <option value="Mebarki Omar">Mebarki Omar</option>
+            <option value="Ihab Oguiba">Ihab Oguiba </option>
+            <option value="Soumia Bouchebout">Soumia Bouchebout</option>
+            <option value="Beggah Rania">Beggah Rania</option>
+        </select>
+        <input type="password" id="password-input" placeholder="Enter Password" />
+        <button onclick="signIn()">Sign In</button>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard">
+        <header class="dashboard-header">
+            <div class="logo">Teletic Support</div>
+            <div id="note-bar" contenteditable="true" onblur="updateNote()">
+                Team notes appear here...
+            </div>
+            <div id="welcome-user">
+                Welcome, <span id="username-display"></span>
+            </div>
+            <div id="sidebar-icon" onclick="toggleSidebar()">&#9776;</div>
+        </header>
+
+        <!-- Sidebar -->
+        <div id="sidebar">
+            <ul>
+                <li onclick="loadReclamations()">Reclamations</li>
+                <li onclick="loadTrackSim()">Track SIM</li>
+                <li onclick="loadCorrection()">Correction</li>
+                <li onclick="loadRemboursement()">Remboursement</li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content">
+            <!-- Reclamations Section -->
+            <div id="reclamations">
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search for client or transaction ..." onkeyup="filterTable('reclamations-table', this.value)" />
+                    <button onclick="clearDisplay('reclamations-table')">Clear Display</button>
+                    <button onclick="exportToExcel('reclamations-table')">Export to Excel</button>
+                </div>
+                <table id="reclamations-table">
+                    <thead>
+                        <tr>
+                            <th>Nom Client</th>
+                            <th>Numero DUC Client</th>
+                            <th>Application</th>
+                            <th>Transaction ID</th>
+                            <th>Date</th>
+                            <th>Support</th>
+                            <th>Problème</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" class="input-field" placeholder="Nom Client"></td>
+                            <td><input type="text" class="input-field" placeholder="Numero DUC Client"></td>
+                            <td>
+                                <select class="input-field problem-select">
+                                    <option value="e-voucher">E-Voucher</option>
+                                    <option value="izi">Izi</option>
+                                    <option value="topili">Topili</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="input-field" placeholder="Transaction ID"></td>
+                            <td contenteditable="true">${today}</td>
+                            <td contenteditable="true">${currentUsername}</td>
+                            <td>
+                                <select class="input-field support-select">
+                                    <option value="probleme ooredoo">Problème Ooredoo</option>
+                                    <option value="authentification">Authentification</option>
+                                    <option value="deux fleche">Deux Flèche</option>
+                                </select>
+                            </td>
+                            <td><button onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" class="input-field" placeholder="Nom Client"></td>
+                            <td><input type="text" class="input-field" placeholder="Numero DUC Client"></td>
+                            <td>
+                                <select class="input-field problem-select">
+                                    <option value="e-voucher">E-Voucher</option>
+                                    <option value="izi">Izi</option>
+                                    <option value="topili">Topili</option>
+                                </select>
+                            </td>
+                            <td><input type="text" class="input-field" placeholder="Transaction ID"></td>
+                            <td contenteditable="true">${today}</td>
+                            <td contenteditable="true">${currentUsername}</td>
+                            <td>
+                                <select class="input-field support-select">
+                                    <option value="probleme ooredoo">Problème Ooredoo</option>
+                                    <option value="authentification">Authentification</option>
+                                    <option value="deux fleche">Deux Flèche</option>
+                                </select>
+                            </td>
+                            <td><button onclick="deleteRow(this)">Delete</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="add-row-btn" onclick="addReclamationRow()">Add Row</button>
+            </div>
+
+            <!-- Track SIM Section -->
+            <div id="track-sim">
+                <div class="search-bar">
+                    <input type="text" id="track-search-input" placeholder="Search for SIM ID or Number ..." onkeyup="filterTable('track-sim-table', this.value)" />
+                    <button onclick="clearDisplay('track-sim-table')">Clear Display</button>
+                    <button onclick="exportToExcel('track-sim-table')">Export to Excel</button>
+                </div>
+                <table id="track-sim-table">
+                    <thead>
+                        <tr>
+                            <th>SIM ID</th>
+                            <th>SIM Number</th>
+                            <th>Type</th>
+                            <th>Modem</th>
+                            <th>Status</th>
+                            <th>Date de Vérification</th>
+                            <th>Support</th>
+                            <th>Date de Dernière Transaction Reçue</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" class="input-field" placeholder="SIM ID"></td>
+                            <td><input type="text" class="input-field" placeholder="SIM Number"></td>
+                            <td>
+                                <select class="input-field modem-select">
+                                    <option value="pdv">PDV</option>
+                                    <option value="primaire">Primaire</option>
+                                    <option value="master">Master</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="input-field modem-select">
+                                    <option value="Zephyr-Djezzy">Zephyr-Djezzy</option>
+                                    <option value="Montana-Djezzy">Montana-Djezzy</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="input-field status-select">
+                                    <option value="Opérationnelle">Opérationnelle</option>
+                                    <option value="Suspendue">Suspendue</option>
+                                    <option value="Supprimée">Supprimée</option>
+                                </select>
+                            </td>
+                            <td contenteditable="true">${today}</td>
+                            <td contenteditable="true">${currentUsername}</td>
+                            <td contenteditable="true">${today}</td>
+                            <td><button onclick="deleteTrackSimRow(this)">Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" class="input-field" placeholder="SIM ID"></td>
+                            <td><input type="text" class="input-field" placeholder="SIM Number"></td>
+                            <td>
+                                <select class="input-field modem-select">
+                                    <option value="pdv">PDV</option>
+                                    <option value="primaire">Primaire</option>
+                                    <option value="master">Master</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="input-field modem-select">
+                                    <option value="Zephyr-Djezzy">Zephyr-Djezzy</option>
+                                    <option value="Montana-Djezzy">Montana-Djezzy</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="input-field status-select">
+                                    <option value="Opérationnelle">Opérationnelle</option ```html
+                                    <option value="Suspendue">Suspendue</option>
+                                    <option value="Supprimée">Supprimée</option>
+                                </select>
+                            </td>
+                            <td contenteditable="true">${today}</td>
+                            <td contenteditable="true">${currentUsername}</td>
+                            <td contenteditable="true">${today}</td>
+                            <td><button onclick="deleteTrackSimRow(this)">Delete</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="add-row-btn" onclick="addTrackSimRow()">Add Row</button>
+                <button class="duplicate-btn" onclick="duplicateSelectedRows()">Duplicate Selected</button>
+            </div>
+
+            <!-- Correction Section -->
+            <div id="correction">
+                <div class="search-bar">
+                    <input type="text" id="correction-search-input" placeholder="Search for name..." onkeyup="filterTable('correction-table', this.value)" />
+                    <button onclick="clearDisplay('correction-table')">Clear Display</button>
+                    <button onclick="exportToExcel('correction-table')">Export to Excel</button>
+                </div>
+                <table id="correction-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Montant (DZD)</th>
+                            <th>Date</th>
+                            <th>Support</th>
+                            <th>Produit</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" class="input-field" placeholder="Name"></td>
+                            <td><input type="number" class="input-field" placeholder="Montant (DZD)"></td>
+                            <td>${today}</td>
+                            <td>${currentUsername}</td>
+                            <td>
+                                <select class="input-field">
+                                    <option value="Arsselli">Arsselli</option>
+                                    <option value="Storm">Storm</option>
+                                    <option value="Idoom">Idoom</option>
+                                    <option value="Nouveau">Nouveau</option>
+                                    <option value="Flexy">Flexy</option>
+                                    <option value="Jeux">Jeux</option>
+                                </select>
+                            </td>
+                            <td><button onclick="deleteCorrectionRow(this)">Delete</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" class="input-field" placeholder="Name"></td>
+                            <td><input type="number" class="input-field" placeholder="Montant (DZD)"></td>
+                            <td>${today}</td>
+                            <td>${currentUsername}</td>
+                            <td>
+                                <select class="input-field">
+                                    <option value="Arsselli">Arsselli</option>
+                                    <option value="Storm">Storm</option>
+                                    <option value="Idoom">Idoom</option>
+                                    <option value="Nouveau">Nouveau</option>
+                                    <option value="Flexy">Flexy</option>
+                                    <option value="Jeux">Jeux</option>
+                                </select>
+                            </td>
+                            <td><button onclick="deleteCorrectionRow(this)">Delete</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="add-row-btn" onclick="addCorrectionRow()">Add Row</button>
+            </div>
+
+            <!-- Remboursement Section -->
+            <div id="remboursement">
+                <div class="search-bar">
+                    <select id="remboursement-select" onchange="showRemboursementTable()">
+                        <option value="">Select Option</option>
+                        <option value="master">Master</option>
+                        <option value="primaire">Primaire</option>
+                        <option value="idoom">Idoom</option>
+                        <option value="remboursement">Remboursement</option>
+                    </select>
+                    <button onclick="clearDisplay('remboursement-table')">Clear Display</button>
+                    <button onclick="exportToExcel('remboursement-table')">Export to Excel</button>
+                </div>
+            
+                <!-- Master Table -->
+                <div id="master-table" style="display:none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom Client</th>
+                                <th>ID Transaction</th>
+                                <th>Numéro de Téléphone</th>
+                                <th>Montant</th>
+                                <th>Date</th>
+                                <th>Support</th>
+                                <th>Parent 1</th>
+                                <th>Parent 2</th>
+                                <th> ```html
+                                Parent 3</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" class="input-field" placeholder="Nom Client"></td>
+                                <td><input type="text" class="input-field" placeholder="ID Transaction"></td>
+                                <td><input type="text" class="input-field" placeholder="Numéro de Téléphone"></td>
+                                <td><input type="number" class="input-field" placeholder="Montant"></td>
+                                <td>${today}</td>
+                                <td>${currentUsername}</td>
+                                <td><input type="text" class="input-field" placeholder="Parent 1"></td>
+                                <td><input type="text" class="input-field" placeholder="Parent 2"></td>
+                                <td><input type="text" class="input-field" placeholder="Parent 3"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="input-field" placeholder="Nom Client"></td>
+                                <td><input type="text" class="input-field" placeholder="ID Transaction"></td>
+                                <td><input type="text" class="input-field" placeholder="Numéro de Téléphone"></td>
+                                <td><input type="number" class="input-field" placeholder="Montant"></td>
+                                <td>${today}</td>
+                                <td>${currentUsername}</td>
+                                <td><input type="text" class="input-field" placeholder="Parent 1"></td>
+                                <td><input type="text" class="input-field" placeholder="Parent 2"></td>
+                                <td><input type="text" class="input-field" placeholder="Parent 3"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="add-row-btn" onclick="addMasterRow()">Add Row</button>
+                </div>
+            
+                <!-- Primaire Table -->
+                <div id="primaire-table" style="display:none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom Client</th>
+                                <th>ID Transaction</th>
+                                <th>Numéro de Téléphone</th>
+                                <th>Montant</th>
+                                <th>Date</th>
+                                <th>Support</th>
+                                <th>Parent 1</th>
+                                <th>Parent 2</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" class="input-field" placeholder="Nom Client"></td>
+                                <td><input type="text" class="input-field" placeholder="ID Transaction"></td>
+                                <td><input type="text" class="input-field" placeholder="Numéro de Téléphone"></td>
+                                <td><input type="number" class="input-field" placeholder="Montant"></td>
+                                <td>${today}</td>
+                                <td>${currentUsername}</td>
+                                <td><input type="text" class="input-field" placeholder="Parent 1"></td>
+                                <td><input type="text" class="input-field" placeholder="Parent 2"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="input-field" placeholder="Nom Client"></td>
+                                <td><input type="text" class="input-field" placeholder="ID Transaction"></td>
+                                <td><input type="text" class="input-field" placeholder="Numéro de Téléphone"></td>
+                                <td><input type="number" class="input-field" placeholder="Montant"></td>
+                                <td>${today}</td>
+                                <td>${currentUsername}</td>
+                                <td><input type="text" class="input-field" placeholder="Parent 1"></td>
+                                <td><input type="text" class="input-field" placeholder="Parent 2"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="add-row-btn" onclick="addPrimaireRow()">Add Row</button>
+                </div>
+            
+                <!-- Idoom Table -->
+                <div id="idoom-table" style="display:none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom Client</th>
+                                <th>ID Transaction</th>
+                                <th>Numéro de Téléphone</th>
+                                <th>Montant</th>
+                                <th>Date</th>
+                                <th>Support</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" class="input-field" placeholder="Nom Client"></td>
+                                <td>< input type="text" class="input-field" placeholder="ID Transaction"></td>
+                                <td><input type="text" class="input-field" placeholder="Numéro de Téléphone"></td>
+                                <td><input type="number" class="input-field" placeholder="Montant"></td>
+                                <td>${today}</td>
+                                <td>${currentUsername}</td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="input-field" placeholder="Nom Client"></td>
+                                <td><input type="text" class="input-field" placeholder="ID Transaction"></td>
+                                <td><input type="text" class="input-field" placeholder="Numéro de Téléphone"></td>
+                                <td><input type="number" class="input-field" placeholder="Montant"></td>
+                                <td>${today}</td>
+                                <td>${currentUsername}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="add-row-btn" onclick="addIdoomRow()">Add Row</button>
+                </div>
+            
+                <!-- Remboursement Table -->
+                <div id="remboursement-table" style="display:none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom Client</th>
+                                <th>ID Transaction</th>
+                                <th>Numéro de Téléphone</th>
+                                <th>Montant</th>
+                                <th>Date</th>
+                                <th>Support</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" class="input-field" placeholder="Nom Client"></td>
+                                <td><input type="text" class="input-field" placeholder="ID Transaction"></td>
+                                <td><input type="text" class="input-field" placeholder="Numéro de Téléphone"></td>
+                                <td><input type="number" class="input-field" placeholder="Montant"></td>
+                                <td>${today}</td>
+                                <td>${currentUsername}</td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="input-field" placeholder="Nom Client"></td>
+                                <td><input type="text" class="input-field" placeholder="ID Transaction"></td>
+                                <td><input type="text" class="input-field" placeholder="Numéro de Téléphone"></td>
+                                <td><input type="number" class="input-field" placeholder="Montant"></td>
+                                <td>${today}</td>
+                                <td>${currentUsername}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="add-row-btn" onclick="addRemboursementRow()">Add Row</button>
+                </div>
+            </div>
+
+            <div id="archive" style="display: none;">
+                <h3>Archive</h3>
+                <select id="section-select" onchange="showArchiveTable()">
+                    <option value="">Select Section</option>
+                    <option value="reclamations">Reclamations</option>
+                    <option value="track-sim">Track SIM</option>
+                    <option value="correction">Correction</option>
+                    <option value="remboursement">Remboursement</option>
+                </select>
+                <select id="year-select" onchange="loadArchiveDays()">
+                    <option value="">Select Year</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                </select>
+                <select id="month-select" onchange="loadArchiveDays()">
+                    <option value="">Select Month</option>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+                <select id="day-select" onchange="loadArchiveData()">
+                    <option value="">Select Day</option>
+                </select>
+                <button onclick="viewArchive()">View Archive</button>
+                <table id="archive-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            < th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sample Data 1</td>
+                            <td>${today}</td>
+                        </tr>
+                        <tr>
+                            <td>Sample Data 2</td>
+                            <td>${today}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        <footer>
+            <button onclick="toggleArchive()">View Archive</button>
+        </footer>
+    
+    <script>
+        let currentUsername = "";
+        let reclamationsData = JSON.parse(localStorage.getItem("reclamationsData")) || [];
+        let trackSimData = JSON.parse(localStorage.getItem("trackSimData")) || [];
+        let correctionData = JSON.parse(localStorage.getItem("correctionData")) || [];
+        let remboursementData = JSON.parse(localStorage.getItem("remboursementData")) || [];
+        let archiveData = JSON.parse(localStorage.getItem("archiveData")) || [];
+        const today = new Date().toLocaleDateString();
+
+        function signIn() {
+            const passwordInput = document.getElementById("password-input");
+            const storedPassword = localStorage.getItem("userPassword");
+
+            if (passwordInput.value === "") {
+                alert("Please enter your password.");
+                return;
+            }
+
+            if (!storedPassword) {
+                localStorage.setItem("userPassword", passwordInput.value);
+                alert("Password set successfully. You can now sign in.");
+            } else {
+                if (passwordInput.value !== storedPassword) {
+                    alert("Incorrect password. Please try again.");
+                    return;
+                }
+            }
+
+            currentUsername = document.getElementById("username-select").value;
+            document.getElementById("username-display").textContent = currentUsername;
+            document.getElementById("signin-page").style.display = "none";
+            document.getElementById("dashboard").style.display = "flex";
+            loadTablesData();
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const isOpen = sidebar.style.left === "0px";
+            sidebar.style.left = isOpen ? "-220px" : "0px";
+        }
+
+        function toggleArchive() {
+            const archive = document.getElementById("archive");
+            const isVisible = archive.style.display === "block";
+            archive.style.display = isVisible ? "none" : "block";
+            if (!isVisible) {
+                loadArchiveData(); // Load data when opening the archive
+            }
+        }
+
+        function loadArchiveDays() {
+            const year = document.getElementById("year-select").value;
+            const month = document.getElementById("month-select").value;
+
+            const daySelect = document.getElementById("day-select");
+            daySelect.innerHTML = '<option value="">Select Day</option>';
+
+            if (year && month) {
+                const daysInMonth = new Date(year, month, 0).getDate();
+                for (let i = 1; i <= daysInMonth; i++) {
+                    daySelect.innerHTML += `<option value="${i}">${i}</option>`;
+                }
+            }
+        }
+
+        function loadReclamations() {
+            document.getElementById("reclamations").style.display = "block";
+            document.getElementById("track-sim").style.display = "none";
+            document.getElementById("correction").style.display = "none";
+            document.getElementById("remboursement").style.display = "none";
+        }
+
+        function loadTrackSim() {
+            document.getElementById("track-sim").style.display = "block";
+            document.getElementById("reclamations").style.display = "none";
+            document.getElementById("correction").style.display = "none";
+            document.getElementById("remboursement").style.display = "none";
+        }
+
+        function loadCorrection() {
+            document.getElementById("correction").style.display = "block";
+            document.getElementById("reclamations").style.display = "none";
+            document.getElementById("track-sim").style.display = "none";
+            document.getElementById("remboursement").style.display = "none";
+        }
+
+        function loadRemboursement() {
+            document.getElementById("remboursement").style.display = "block";
+            document.getElementById("reclamations").style.display = "none";
+            document.getElementById("track-sim").style.display = "none";
+            document.getElementById("correction").style.display = "none";
+        }
+
+        function filterTable(tableId, searchTerm) {
+            const table = document.getElementById(tableId);
+            const rows = table .getElementsByTagName("tr");
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName("td");
+                let rowVisible = false;
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        rowVisible = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = rowVisible ? "" : "none";
+            }
+        }
+
+        function clearDisplay(tableId) {
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName("tbody")[0].rows;
+            while (rows.length > 0) {
+                rows[0].remove();
+            }
+        }
+
+        function exportToExcel(tableId) {
+            const table = document.getElementById(tableId);
+            let csv = [];
+            for (let row of table.rows) {
+                let cols = Array.from(row.querySelectorAll("td, th"));
+                csv.push(cols.map(col => col.innerText).join(","));
+            }
+            const csvString = csv.join("\n");
+            const blob = new Blob([csvString], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${tableId}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadTablesData() {
+            loadReclamationsData();
+            loadTrackSimData();
+            loadCorrectionData();
+            loadRemboursementData();
+        }
+
+        function addReclamationRow() {
+            const table = document.getElementById("reclamations-table").getElementsByTagName("tbody")[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `<td><input type="text" class="input-field" placeholder="Nom Client" onblur="updateReclamationsData()"></td>
+                               <td><input type="text" class="input-field" placeholder="Numero DUC Client" onblur="updateReclamationsData()"></td>
+                               <td><select class="input-field problem-select" onchange="updateReclamationsData()">
+                                   <option value="e-voucher">E-Voucher</option>
+                                   <option value="izi">Izi</option>
+                                   <option value="topili">Topili</option>
+                               </select></td>
+                               <td><input type="text" class="input-field" placeholder="Transaction ID" onblur="updateReclamationsData()"></td>
+                               <td contenteditable="true" onblur="updateReclamationsData()">${today}</td>
+                               <td contenteditable="true" onblur="updateReclamationsData()">${currentUsername}</td>
+                               <td contenteditable="true" onblur="updateReclamationsData()">
+                                   <select class="input-field support-select" onchange="updateReclamationsData()">
+                                       <option value="probleme ooredoo">Problème Ooredoo</option>
+                                       <option value="authentification">Authentification</option>
+                                       <option value="deux fleche">Deux Flèche</option>
+                                   </select>
+                               </td>
+                               <td><button onclick="deleteRow(this)">Delete</button></td>`;
+        }
+
+        function addTrackSimRow() {
+            const table = document.getElementById("track-sim-table").getElementsByTagName("tbody")[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `<td><input type="text" class="input-field" placeholder="SIM ID" onblur="updateTrackSimData()"></td>
+                               <td><input type="text" class="input-field" placeholder="SIM Number" onblur="updateTrackSimData()"></td>
+                               <td><select class="input-field modem-select" onchange="updateTrackSimData()">
+                                   <option value="pdv">PDV</option>
+                                   <option value="primaire">Primaire</option>
+                                   <option value="master">Master</option>
+                               </select></td>
+                               <td><select class="input-field modem-select" onchange="updateTrackSimData()">
+                                   <option value="Zephyr-Djezzy">Zephyr-Djezzy</option>
+                                   <option value="Montana-Djezzy">Montana-Djezzy</option>
+                               </select></td>
+                               <td><select class="input-field status-select" onchange="updateTrackSimData()">
+                                   <option value="Opérationnelle">Opérationnelle</option>
+                                   <option value="Suspendue"> Suspendue</option>
+                                   <option value="Supprimée">Supprimée</option>
+                               </select></td>
+                               <td contenteditable="true" onblur="updateTrackSimData()">${today}</td>
+                               <td contenteditable="true" onblur="updateTrackSimData()">${currentUsername}</td>
+                               <td contenteditable="true" onblur="updateTrackSimData()">${today}</td>
+                               <td><button onclick="deleteTrackSimRow(this)">Delete</button></td>`;
+        }
+
+        function addCorrectionRow() {
+            const table = document.getElementById("correction-table").getElementsByTagName("tbody")[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `<td><input type="text" class="input-field" placeholder="Name" onblur="updateCorrectionData()"></td>
+                               <td><input type="number" class="input-field" placeholder="Montant (DZD)" onblur="updateCorrectionData()"></td>
+                               <td>${today}</td>
+                               <td>${currentUsername}</td>
+                               <td>
+                                   <select class="input-field" onchange="updateCorrectionData()">
+                                       <option value="Arsselli">Arsselli</option>
+                                       <option value="Storm">Storm</option>
+                                       <option value="Idoom">Idoom</option>
+                                       <option value="Nouveau">Nouveau</option>
+                                       <option value="Flexy">Flexy</option>
+                                       <option value="Jeux">Jeux</option>
+                                   </select>
+                               </td>
+                               <td><button onclick="deleteCorrectionRow(this)">Delete</button></td>`;
+        }
+
+        function addRemboursementRow() {
+            const table = document.getElementById("remboursement-table").getElementsByTagName("tbody")[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `<td><input type="text" class="input-field" placeholder="Nom Client" onblur="updateRemboursementData()"></td>
+                               <td><input type="text" class="input-field" placeholder="ID Transaction" onblur="updateRemboursementData()"></td>
+                               <td><input type="text" class="input-field" placeholder="Numéro de Téléphone Client" onblur="updateRemboursementData()"></td>
+                               <td><input type="number" class="input-field" placeholder="Montant" onblur="updateRemboursementData()"></td>
+                               <td>${today}</td>
+                               <td>${currentUsername}</td>
+                               <td><button onclick="deleteRemboursementRow(this)">Delete</button></td>`;
+        }
+
+        function showRemboursementTable() {
+            const selectedValue = document.getElementById("remboursement-select").value;
+            
+            // Hide all tables
+            document.getElementById("master-table").style.display = "none";
+            document.getElementById("primaire-table").style.display = "none";
+            document.getElementById("idoom-table").style.display = "none";
+            document.getElementById("remboursement-table").style.display = "none";
+
+            // Show the selected table
+            if (selectedValue === "master") {
+                document.getElementById("master-table").style.display = "block";
+            } else if (selectedValue === "primaire") {
+                document.getElementById("primaire-table").style.display = "block";
+            } else if (selectedValue === "idoom") {
+                document.getElementById("idoom-table").style.display = "block";
+            } else if (selectedValue === "remboursement") {
+                document.getElementById("remboursement-table").style.display = "block";
+            }
+        }
+
+        function addMasterRow() {
+            const table = document.getElementById("master-table").getElementsByTagName("tbody")[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `<td><input type="text" class="input-field" placeholder="Nom Client" onblur="updateMasterData()"></td>
+                                <td><input type="text" class="input-field" placeholder="ID Transaction" onblur="updateMasterData()"></td>
+                                <td><input type="text" class="input-field" placeholder="Numéro de Téléphone" onblur="updateMasterData()"></td>
+                                <td><input type="number" class="input-field" placeholder="Montant" onblur="updateMasterData()"></td>
+                                <td>${today}</td>
+                                <td>${currentUsername}</td>
+                                <td>< input type="text" class="input-field" placeholder="Parent 1" onblur="updateMasterData()"></td>
+                                <td><input type="text" class="input-field" placeholder="Parent 2" onblur="updateMasterData()"></td>
+                                <td><input type="text" class="input-field" placeholder="Parent 3" onblur="updateMasterData()"></td>`;
+        }
+
+        function addPrimaireRow() {
+            const table = document.getElementById("primaire-table").getElementsByTagName("tbody")[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `<td><input type="text" class="input-field" placeholder="Nom Client" onblur="updatePrimaireData()"></td>
+                                <td><input type="text" class="input-field" placeholder="ID Transaction" onblur="updatePrimaireData()"></td>
+                                <td><input type="text" class="input-field" placeholder="Numéro de Téléphone" onblur="updatePrimaireData()"></td>
+                                <td><input type="number" class="input-field" placeholder="Montant" onblur="updatePrimaireData()"></td>
+                                <td>${today}</td>
+                                <td>${currentUsername}</td>
+                                <td><input type="text" class="input-field" placeholder="Parent 1" onblur="updatePrimaireData()"></td>
+                                <td><input type="text" class="input-field" placeholder="Parent 2" onblur="updatePrimaireData()"></td>`;
+        }
+
+        function addIdoomRow() {
+            const table = document.getElementById("idoom-table").getElementsByTagName("tbody")[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `<td><input type="text" class="input-field" placeholder="Nom Client" onblur="updateIdoomData()"></td>
+                                <td><input type="text" class="input-field" placeholder="ID Transaction" onblur="updateIdoomData()"></td>
+                                <td><input type="text" class="input-field" placeholder="Numéro de Téléphone" onblur="updateIdoomData()"></td>
+                                <td><input type="number" class="input-field" placeholder="Montant" onblur="updateIdoomData()"></td>
+                                <td>${today}</td>
+                                <td>${currentUsername}</td>`;
+        }
+
+        function updateMasterData() {
+            // Function to handle updates for Master table data
+        }
+
+        function updatePrimaireData() {
+            // Function to handle updates for Primaire table data
+        }
+
+        function updateIdoomData() {
+            // Function to handle updates for Idoom table data
+        }
+
+        function duplicateSelectedRows() {
+            const table = document.getElementById("track-sim-table").getElementsByTagName("tbody")[0];
+            const selectedRows = Array.from(table.rows).filter(row => row.querySelector('input[type="checkbox"]:checked'));
+            selectedRows.forEach(row => {
+                const newRow = table.insertRow();
+                newRow.innerHTML = row.innerHTML.replace(/(value="[^"]*")/g, 'value=""').replace(/contenteditable="true"/g, 'contenteditable="false"');
+            });
+        }
+
+        function deleteRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+        }
+
+        function deleteTrackSimRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+        }
+
+        function deleteCorrectionRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+        }
+
+        function deleteRemboursementRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+        }
+
+        function updateNote() {
+            const note = document.getElementById("note-bar").innerText;
+            localStorage.setItem("note", note);
+        }
+
+        function loadArchiveData() {
+            const year = document.getElementById("year-select").value;
+            const month = document.getElementById("month-select").value;
+            const day = document.getElementById("day-select").value;
+
+            // Clear previous day options
+            const daySelect = document.getElementById("day-select");
+            daySelect.innerHTML = '<option value="">Select Day</option>';
+
+            if (year && month) {
+                const daysInMonth = new Date(year, month, 0).getDate();
+                for (let i = 1; i <= daysInMonth; i++) {
+                    daySelect.innerHTML += `<option value="${i}">${i}</option>`;
+                }
+            }
+
+            if (year && month && day) {
+                const filteredData = archiveData.filter(data => {
+                    const date = new Date(data.date);
+                    return date.getFullYear() == year && (date.getMonth() + 1) == month && date.getDate() == day;
+                });
+                populateArchiveTable(filteredData);
+            } else {
+                clearArchiveTable();
+            }
+        }
+
+        function populateArchiveTable(data) {
+            const tbody = document.getElementById("archive-table").getElementsByTagName("tbody")[0];
+            tbody.innerHTML = ""; // Clear previous data
+            data.forEach(item => {
+                const row = tbody.insertRow();
+                row.innerHTML = `<td>${item.value}</td><td>${item.date}</td>`;
+            });
+        }
+
+        function clearArchiveTable() {
+            const tbody = document.getElementById("archive-table").getElementsByTagName("tbody")[0];
+            tbody.innerHTML = ""; // Clear previous data
+        }
+
+        function viewArchive() {
+            const year = document.getElementById("year-select").value;
+            const month = document.getElementById("month-select").value;
+            const day = document.getElementById("day-select").value;
+
+            // Load archive data based on selected year, month, and day
+            loadArchiveData(year, month, day);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("dashboard").style.display = "none"; // Hide dashboard initially
+            document.getElementById("reclamations").style.display = "none"; // Hide Reclamations section initially
+            document.getElementById("track-sim").style.display = "none"; // Hide Track SIM section initially
+            document.getElementById("correction").style.display = "none"; // Hide Correction section initially
+            document.getElementById("remboursement").style.display = "none"; // Hide Remboursement section initially
+
+            const storedNote = localStorage.getItem("note");
+            if (storedNote) {
+                document.getElementById("note-bar").innerText = storedNote;
+            }
+        });
+    </script>
+</body>
+</html>
